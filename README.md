@@ -25,38 +25,37 @@ Finally, a note about `pyterminfo`'s implementation. Typically, parameterized-st
 the following is generated (in `str` mode):
 
 ```
-  1           0 LOAD_CONST               0 (<built-in method join of str object at 0x7ff4de3da848>)
+
+  1           0 LOAD_CONST               0 #str.join
               3 LOAD_CONST               1 ('\x1b[')
               6 LOAD_FAST                0 (a1)
               9 LOAD_CONST               2 (8)
              12 COMPARE_OP               0 (<)
-             15 POP_JUMP_IF_FALSE       31
+             15 POP_JUMP_IF_FALSE       33
              18 LOAD_CONST               3 ('4')
-             21 LOAD_CONST               4 ('%d')
+             21 LOAD_CONST               4 (<class 'str'>)
              24 LOAD_FAST                0 (a1)
-             27 BINARY_MODULO
-             28 JUMP_FORWARD            39 (to 70)
-        >>   31 LOAD_FAST                0 (a1)
-             34 LOAD_CONST               5 (16)
-             37 COMPARE_OP               0 (<)
-             40 POP_JUMP_IF_FALSE       60
-             43 LOAD_CONST               6 ('10')
-             46 LOAD_CONST               4 ('%d')
-             49 LOAD_FAST                0 (a1)
-             52 LOAD_CONST               2 (8)
-             55 BINARY_SUBTRACT
-             56 BINARY_MODULO
-             57 JUMP_FORWARD            10 (to 70)
-        >>   60 LOAD_CONST               7 ('48;5;')
-             63 LOAD_CONST               4 ('%d')
-             66 LOAD_FAST                0 (a1)
-             69 BINARY_MODULO
-        >>   70 LOAD_CONST               8 ('m')
-             73 BUILD_TUPLE              4
-             76 CALL_FUNCTION            1 (1 positional, 0 keyword pair)
-             79 RETURN_VALUE
-
-
+             27 CALL_FUNCTION            1 (1 positional, 0 keyword pair)
+             30 JUMP_FORWARD            43 (to 76)
+        >>   33 LOAD_FAST                0 (a1)
+             36 LOAD_CONST               5 (16)
+             39 COMPARE_OP               0 (<)
+             42 POP_JUMP_IF_FALSE       64
+             45 LOAD_CONST               6 ('10')
+             48 LOAD_CONST               4 (<class 'str'>)
+             51 LOAD_FAST                0 (a1)
+             54 LOAD_CONST               2 (8)
+             57 BINARY_SUBTRACT
+             58 CALL_FUNCTION            1 (1 positional, 0 keyword pair)
+             61 JUMP_FORWARD            12 (to 76)
+        >>   64 LOAD_CONST               7 ('48;5;')
+             67 LOAD_CONST               4 (<class 'str'>)
+             70 LOAD_FAST                0 (a1)
+             73 CALL_FUNCTION            1 (1 positional, 0 keyword pair)
+        >>   76 LOAD_CONST               8 ('m')
+             79 BUILD_TUPLE              4
+             82 CALL_FUNCTION            1 (1 positional, 0 keyword pair)
+             85 RETURN_VALUE
 
 ```
 

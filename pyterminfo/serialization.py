@@ -204,8 +204,11 @@ class StrStrategy( Strategy ) :
     return b.decode( 'latin1' )
 
   def emit_format( self, fmt, value ) :
-    self.emit_std_prefix2( Const(str(fmt)), value )
-    self.emit_binary_modulo()
+    if str(fmt) == '%d' :
+      self.emit_call1( str, value )
+    else :
+      self.emit_std_prefix2( Const(str(fmt)), value )
+      self.emit_binary_modulo()
 
 
 ##################################################
