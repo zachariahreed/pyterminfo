@@ -66,3 +66,5 @@ The transformation from format string to bytecode happens in serveral stages whi
 |------------|-----------|
 | <img src="https://raw.githubusercontent.com/zachariahreed/pyterminfo/gh-pages/TERMINFO-set_a_foreground.png" width=375> | <img src="https://raw.githubusercontent.com/zachariahreed/pyterminfo/gh-pages/BYTECODE-set_a_foreground.png" width=375> |
 
+
+`pyterminfo` depends on ![byteasm](https://github.com/zachariahreed/byteasm).
