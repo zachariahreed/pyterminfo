@@ -3,6 +3,7 @@ from . compile import *
 from . utils import *
 
 import locale
+import posixpath
 import os
 import sys
 
@@ -31,11 +32,7 @@ def _ipad( it, fill ) :
 ##################################################
 class TermInfo( object ) :
 
-  def __init__( self, term, binary, encoding ) :
-
-    path = '/usr/share/terminfo/%s/%s' % (term[0],term)
-    if sys.platform == 'darwin' :
-      path = '/usr/share/terminfo/%02X/%s' % (ord(term[0]),term)
+  def __init__( self, path, binary, encoding ) :
 
     with open( path, 'rb' ) as f :
 
@@ -148,7 +145,16 @@ def terminfo( term=None, binary=False, encoding=None ) :
     if encoding is None :
       encoding = _default_encoding
 
-    info = TermInfo( term, binary, encoding )
+    suffix = term[0]
+    if sys.platform == 'darwin' :
+      suffix = '%02X' % ord( suffix )
+    suffix += '/' + term
+
+    path = posixpath.expanduser( '~/.terminfo/' + suffix )
+    if not os.path.exists( path ) :
+      path = '/usr/share/terminfo/' + suffix 
+
+    info = TermInfo( path, binary, encoding )
 
     _cache[ (term,binary,encoding) ] = info
     _cache[ key ] = info
