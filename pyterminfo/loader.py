@@ -10,6 +10,16 @@ __all__ = [
     'make_terminfo_from_path'
   ]
 
+##################################################
+#                                                #
+##################################################
+@singleton
+def EMPTY_ATTRIBUTES() :
+  result = {}
+  for k,v in CAPABILITY_VARNAMES.items() :
+    result[k] = None
+    result[v] = None
+  return result
 
 ##################################################
 #                                                #
@@ -141,29 +151,20 @@ class RawTermInfo( object ) :
 ##################################################
 def make_terminfo_from_raw( raw, binary, encoding ) :
 
-  def parser_b( keys, val, idx ) :
+  def parser_b( cap, val, idx ) :
     if val is not None : return bool(val)
 
-  def parser_n( keys, val, idx ) :
+  def parser_n( cap, val, idx ) :
     return val
 
-  def parser_s( keys, val, idx ) :
+  def parser_s( cap, val, idx ) :
 
-    aritytag = ''
-    if idx is not None :
-      aritytag = keys.pop()
-
-    if aritytag :
-
-      arity = None
-      if aritytag != '*' :
-        arity = int(aritytag)
-
+    if cap in CAPABILITY_ARITY :
       return function_from_capability( 
-                  keys[0]
+                  CAPABILITY_VARNAMES.get( cap, cap )
                 , val
                 , index          = idx
-                , declared_arity = arity
+                , declared_arity = CAPABILITY_ARITY[ cap ]
                 , variables      = variables
                 , encoding       = encoding
                 , binary         = binary
@@ -179,7 +180,7 @@ def make_terminfo_from_raw( raw, binary, encoding ) :
 
 
   ##
-  attribs   = {}
+  attribs   = EMPTY_ATTRIBUTES.copy()
   present   = set()
   extended  = set()
   variables = [0] * 52
@@ -191,11 +192,12 @@ def make_terminfo_from_raw( raw, binary, encoding ) :
   for caps_std, group, parser in groups :
     for cap,val,idx in group.iter( caps_std ) :
 
-      keys = cap.split( ':' )
+      keys = { cap, CAPABILITY_VARNAMES.get( cap, cap ) }
+
       if val in (-1,-2) :
         val = None
 
-      new = parser( keys, val, idx )
+      new = parser( cap, val, idx )
       for k in keys :
         attribs[k] = new
 
@@ -222,6 +224,5 @@ def make_terminfo_from_raw( raw, binary, encoding ) :
 
 def make_terminfo_from_path( path, binary, encoding ) :
   return make_terminfo_from_raw( RawTermInfo(path), binary, encoding )
-
 
 
