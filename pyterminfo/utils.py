@@ -7,6 +7,7 @@ __all__ = [
   , 'constantly'
   , 'first'
   , 'fourth'
+  , 'iextend'
   , 'memoize'
   , 'never'
   , 'second'
@@ -55,6 +56,14 @@ def tuple_map( f, it ) :
 
 def tuple_repeat( n, *args ) :
   return args * n
+
+##################################################
+#                                                #
+##################################################
+def iextend( it, then=None ) :
+  yield from it
+  while True :
+    yield then
 
 ##################################################
 #                                                #

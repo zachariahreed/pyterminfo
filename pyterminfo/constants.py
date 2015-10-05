@@ -183,6 +183,7 @@ STRING_CAPABILITIES = [
   ]
 
 
+
 # NOTE: 
 #   ncurses uses some of the user-defined capabilites for its own 
 #   purposes.  In particular, u8 is not an formatting string.
