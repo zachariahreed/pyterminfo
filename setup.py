@@ -2,7 +2,7 @@ import sys
 from setuptools import setup
 
 __author__  = 'Zachariah Reed'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __contact__ = 'zreed@fastmail.com'
 __url__     = 'https://github.com/zachariahreed/pyterminfo'
 __license__ = 'GPL'
