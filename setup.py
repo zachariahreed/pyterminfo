@@ -2,13 +2,14 @@ import sys
 from setuptools import setup
 
 __author__  = 'Zachariah Reed'
-__version__ = '0.1.3'
+__version__ = '0.2'
 __contact__ = 'zreed@fastmail.com'
 __url__     = 'https://github.com/zachariahreed/pyterminfo'
 __license__ = 'GPL'
 
-if sys.version_info < (3,4) :
-  raise NotImplementedError( 'pyterminfo requires Python 3.4+' )
+# byteasm-0.2.0 and later requires python 3.6
+if sys.version_info < (3,6) :
+  raise NotImplementedError( 'pyterminfo requires Python 3.6+' )
 
 setup(
     name              = 'pyterminfo'
@@ -21,7 +22,7 @@ setup(
   , download_url      = 'https://github.com/zachariahreed/pyterminfo/tarball/' + __version__
   , packages          = ['pyterminfo']
   , platforms         = 'any'
-  , install_requires  = ['byteasm >=0.1, <0.2']
+  , install_requires  = ['byteasm >=0.2, <0.3']
   , extra_requires    = { 'visualization' : ['pygraphviz>=1.3'] }
   , classifiers       = [
                             'Development Status :: 4 - Beta'
@@ -30,8 +31,7 @@ setup(
                           , 'Environment :: Console'
                           , 'Operating System :: Unix'
                           , 'Programming Language :: Python :: 3 :: Only'
-                          , 'Programming Language :: Python :: 3.4'
-                          , 'Programming Language :: Python :: 3.5'
+                          , 'Programming Language :: Python :: 3.6'
                           , 'Topic :: Terminals'
                           ]
   )
