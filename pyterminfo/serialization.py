@@ -245,17 +245,24 @@ class SerializationContextBase( EmittersMixin ) :
     self._spillidx    = 0
     self._stack_depth = 0
 
+  def _insert_op( self, *args, **kwargs ) :
+    return self._assembler._insert_op( *args, **kwargs )
+
+  def _emit_label( self, *args, **kwargs ) :
+    return self._assembler._emit_label( *args, **kwargs )
+
   def spill( self ) :
-    b.emit_store_fast( 'spill' + str(self._spillidx) )
+    self._assembler.emit_store_fast( 'spill' + str(self._spillidx) )
     self._spillidx += 1
     self._stack_depth -= 1
 
   def unspill( self ) :
     self._spillidx += 1
-    b.emit_load_fast( 'spill' + str(self._spillidx) )
+    self._assembler.emit_load_fast( 'spill' + str(self._spillidx) )
     self._stack_depth += 1
 
   def serialize_block( self, blk ) :
+    self._assembler.set_line_number( blk.id )
     self._stack_depth = blk.input_stack
     for op in blk.ops :
       stack_depth = self._stack_depth
@@ -376,15 +383,6 @@ def _make_ctx( strat_e, binary, *args, **kwargs ) :
 def _make_label( blk ) :
   return 'l.' + str(blk.id)
 
-def _branch_target_p( blk, which ) :
-
-  if len(blk.inputs) > 1 :
-    return True
-
-  return blk.inputs                       \
-     and blk.inputs[0].inner.branch       \
-     and isinstance(blk.inputs[0],which)
-
 def serialize( strat, name, tail, arity, binary, encoding, variables ) :
 
   b = FunctionBuilder()
@@ -392,40 +390,60 @@ def serialize( strat, name, tail, arity, binary, encoding, variables ) :
     b.add_positional_arg( str(Arg(a+1)), default=0 )
   b.set_closure_value( 'vars', variables )
 
-  ctx = _make_ctx( strat, binary, b._assembler, variables, encoding )
+  ctx = _make_ctx( strat, binary, b, variables, encoding )
 
   links = compute_child_link_map( tail )
 
+  # order blocks
+  blocks = []
+  block_ordering = {}
   pending = [links.head]
   while pending :
 
-    curr = pending.pop()
-    
-    while curr is not None :
+    next = []
+    while pending :
 
-      if _branch_target_p( curr, Right ) :
-        ctx.emit_label( _make_label( curr ) )
+      curr = pending.pop()
+      while curr is not None :
 
-      ctx.serialize_block( curr )
+        if curr.id in block_ordering :
+          break
 
-      left,right = links[ curr ]
-      if left is None :
-        curr = right
+        if not all( i.inner.id in block_ordering for i in curr.inputs ) :
+          next.append( curr )
+          break
 
-      else :
+        block_ordering[ curr.id ] = len(blocks)
+        blocks.append( curr )
 
-        ctx.emit_pop_jump_if_false( _make_label( right ) )
+        left,right = links[curr]
+        pending.append( right )
+        pending.append( left )
 
-        lleft,lright = links[left]
-        if lleft is None :
-          ctx.serialize_block( left )
-          if lright is not right :
-            ctx.emit_jump_forward( _make_label( lright ) )
-          curr = right
+    pending = next
 
-        else :
-          pending.append( right )
-          curr = left
+  # generate code
+  for idx,blk in enumerate(blocks) :
+
+    ctx.emit_label( _make_label(blk) )
+    ctx.serialize_block( blk )
+    left,right = links[blk]
+
+    if left is None :
+
+      if right is not None :
+        if block_ordering[right.id] != idx+1 :
+          ctx.emit_jump_absolute( _make_label( right ) )
+
+    elif block_ordering[left.id] == idx+1 :
+      ctx.emit_pop_jump_if_false( _make_label( right ) )
+
+    elif block_ordering[right.id] == idx+1 :
+      ctx.emit_pop_jump_if_true( _make_label( left ) )
+
+    else :
+      ctx.emit_pop_jump_if_true( _make_label( left ) )
+      ctx.emit_jump_absolute( _make_label( right ) )
 
   return b.make( name )
 

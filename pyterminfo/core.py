@@ -25,7 +25,41 @@ def EMPTY_ATTRIBUTES() :
 #                                                #
 ##################################################
 class TermInfo( object ) :
-  pass
+
+  def dump( self, long=False, quote=False ) :
+
+    parts = []
+    for k,v in sorted( self.attribs.items() ) :
+
+      name = CAPABILITY_VARNAMES.get( k )
+      if name is None :
+        if k not in self.extended :
+          continue
+      elif long :
+        k = name
+
+      v = getattr( v, 'raw', v )
+
+      if v is True :
+        parts.append( '+' + k )
+      elif v is False :
+        parts.append( '-' + k )
+      elif isinstance(v,int) :
+        parts.append( k + '=' + str(v) )
+      elif isinstance(v,str) and v :
+        v = repr(v)
+        if not quote :
+          v = v[1:-1]
+        parts.append( k + '=' + v )
+      elif isinstance(v,bytes) and v :
+        v = repr(v)
+        if not quote :
+          v = v[2:-1]
+        parts.append( k + '=' + v )
+
+    print( ', '.join( parts ) )
+
+
 
 ##################################################
 #                                                #

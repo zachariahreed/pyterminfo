@@ -77,10 +77,7 @@ def visualize( tail, path ) :
     if left is not None :
       G.add_edge( blk.id, left.id, color='darkorange' )
 
-
   G.draw( path, prog='dot' )
-  #G.write( path[:-4] + '.dot' )
-
 
 
 ##################################################

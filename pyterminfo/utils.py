@@ -104,7 +104,7 @@ class FrozenDict( dict ) :
     return self._hash
 
   def __str__( self ) :
-    return '[' + ','.join( '%d→%d' % kv for kv in sorted(self.items()) ) + ']'
+    return '[' + ','.join( '%s→%s' % kv for kv in sorted(self.items()) ) + ']'
 
   def __setitem__( self, key, value ) :
     raise TypeError( 'cannot mutate \'FrozenDict\' object' )
