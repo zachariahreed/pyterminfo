@@ -55,9 +55,17 @@ def terminfo( term=None, binary=False, encoding=None ) :
         suffix = '%02X' % ord( suffix )
       suffix += '/' + term
 
-      path = posixpath.expanduser( '~/.terminfo/' + suffix )
-      if not os.path.exists( path ) :
-        path = '/usr/share/terminfo/' + suffix 
+      paths = [
+        posixpath.expanduser( '~/.terminfo/' ),
+        '/etc/terminfo/',
+        '/lib/terminfo/',
+        '/usr/share/terminfo/',
+      ]
+
+      for test_path in paths:
+        if os.path.exists( test_path + suffix ) :
+          path = test_path + suffix
+          break
 
     info = make_terminfo_from_path( path, binary, encoding )
 
